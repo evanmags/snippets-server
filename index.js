@@ -1,14 +1,17 @@
 const express = require('express')
 const app = express()
+const bodyparser = require('body-parser')
+
+app.use(bodyparser.urlencoded({ extended: false }))
+app.use(bodyparser.json())
 
 require('dotenv').config()
 
-app.get('/graphQL/:body', (req, res) => {
-  process.stdout.write(req.params.body)
+app.post('/graphQL', (req, res) => {
   res.send(JSON.stringify({
     data: {
       message: 'You have hit the graphQL end point. There is no data here.',
-      request: req.params
+      request: req.body
     }
   }))
 })
