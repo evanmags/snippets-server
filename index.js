@@ -1,19 +1,50 @@
 const express = require('express')
 const app = express()
-const bodyparser = require('body-parser')
 
+const bodyparser = require('body-parser')
 app.use(bodyparser.urlencoded({ extended: false }))
 app.use(bodyparser.json())
 
 require('dotenv').config()
 
-app.post('/graphQL', (req, res) => {
-  res.send(JSON.stringify({
+const crypto = require('crypto')
+
+// connect to database
+
+app.get('/graphql', (req, res) => {
+  // parse query
+  const hash = crypto.createHash(process.env.SALT)
+  const query = JSON.parse(req.query.query)
+  hash.update(query.password, 'utf8')
+  query.password = hash.digest('hex')
+  // query database
+  // structure response
+
+  // send response
+  res.send({
     data: {
-      message: 'You have hit the graphQL end point. There is no data here.',
-      request: req.body
+      message: 'You have hit the graphQL "get" end point. There is no data here.',
+      request: query
     }
-  }))
+  })
+})
+
+app.post('/graphql', (req, res) => {
+  // parse query
+  const hash = crypto.createHash(process.env.SALT)
+  const query = req.body
+  hash.update(query.password, 'utf8')
+  query.password = hash.digest('hex')
+  // query database
+  // structure response
+
+  // send response
+  res.send({
+    data: {
+      message: 'You have hit the graphQL "post" end point. There is no data here.',
+      request: query
+    }
+  })
 })
 
 app.listen(process.env.PORT, () => {

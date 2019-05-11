@@ -4,7 +4,7 @@
   "description": "backend server for the snippets cli",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "nodemon index.js",
     "test": "jest"
   },
   "author": "evanmags",
