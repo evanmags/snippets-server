@@ -1,0 +1,10 @@
+type Query{
+  listSnippets(username: String!): [Snippet!]!
+}
+
+type Snippet{
+  user: User!
+  name: String!
+  language: String
+  content: String!
+}
