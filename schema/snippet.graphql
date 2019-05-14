@@ -1,10 +1,20 @@
+# import User from 'User.graphql'
+
+type Mutation {
+  createSnippet(title: String!, content: String!, language: String): User!
+  updateSnippet(id: String!, title: String, content: String, language: String): Snippet!
+  deleteSnippet(id: String!): Snippet
+}
+
 type Query{
-  listSnippets(username: String!): [Snippet!]!
+  getSnippet(id: String!): Snippet!
+  listSnippets(user: User!): [Snippet!]!
 }
 
 type Snippet{
+  id: ID!
   user: User!
-  name: String!
+  title: String!
   language: String
   content: String!
 }

@@ -1,15 +1,33 @@
 const express = require('express')
 const app = express()
 
+require('dotenv').config()
+
+const cors = require('cors')
+app.use(cors())
+
 const bodyparser = require('body-parser')
 app.use(bodyparser.urlencoded({ extended: false }))
 app.use(bodyparser.json())
 
-require('dotenv').config()
+const mongoose = require('mongoose')
+mongoose.connect(process.env.DB, {
+  useNewUrlParser: true,
+  useCreateIndex: true
+}).then(() => console.log('\nconnected to database'))
+  .catch(console.log)
+
+const { importSchema } = require('graphql-import')
+const schema = importSchema('./schema/User.graphql')
+const expressGraphQL = require('express-graphql')
+app.use('/graphql', expressGraphQL({
+  schema,
+  graphiql: true
+}))
+
+console.log(importSchema('./schema/User.graphql'))
 
 const crypto = require('crypto')
-
-// connect to database
 
 app.get('/graphql', (req, res) => {
   // parse query
