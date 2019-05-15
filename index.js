@@ -17,11 +17,11 @@ mongoose.connect(process.env.DB, {
 }).then(() => console.log('\nconnected to database'))
   .catch(console.log)
 
-const { importSchema } = require('graphql-import')
 const { makeExecutableSchema } = require('graphql-tools')
+const { importSchema } = require('graphql-import')
 const schema = makeExecutableSchema({
-  typeDefs: importSchema('./schema/User.graphql'),
-  resolvers: require('./schema/root.js')
+  typeDefs: importSchema('./graphql/User.graphql'),
+  resolvers: require('./graphql/root.js')
 })
 
 const expressGraphQL = require('express-graphql')

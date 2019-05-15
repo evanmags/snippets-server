@@ -12,9 +12,10 @@ type Query{
 }
 
 type Snippet{
-  id: ID!
+  _id: ID!
   user: User!
   title: String!
-  language: String
+  languages: [String]!
+  tags: [String]!
   content: String!
 }
