@@ -1,16 +1,29 @@
+const User = require('../mongodb/User')
+const Snippet = require('../mongodb/Snippet')
+
 const resolvers = {
   Mutation: {
     // User mutations
     createUser: (root, { username, hash }) => {
-      return { message: 'create user route' }
+      console.log(username)
+      return new User({
+        username,
+        hash
+      }).save()
     },
     deleteUser: (root, { id }) => {
       return { message: 'delete user route' }
     },
 
     // snippet mutations
-    createSnippet: (root, { username, hash }) => {
-      return { message: 'create snippet route' }
+    createSnippet: (root, data) => {
+      const snippet = new Snippet({
+        user: data.user_id,
+        tags: data.tags,
+        languages: data.languages,
+        content: data.content
+      }).save()
+      return snippet
     },
     updateSnippet: (root, { username, hash }) => {
       return { message: 'update snippet route' }

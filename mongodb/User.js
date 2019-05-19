@@ -13,7 +13,7 @@ const userSchema = new Schema({
   },
   snippets: {
     type: [Schema.Types.ObjectId],
-    required: true
+    required: false
   }
 })
 

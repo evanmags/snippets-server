@@ -25,7 +25,7 @@ const schema = makeExecutableSchema({
 })
 
 const expressGraphQL = require('express-graphql')
-app.use('/graphql', expressGraphQL({
+app.use('/graphQL', expressGraphQL({
   schema,
   graphiql: true
 }))
