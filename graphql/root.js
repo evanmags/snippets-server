@@ -1,3 +1,4 @@
+const mongoose = require('mongoose')
 const User = require('../mongodb/User')
 const Snippet = require('../mongodb/Snippet')
 
@@ -5,14 +6,13 @@ const resolvers = {
   Mutation: {
     // User mutations
     createUser: (root, { username, hash }) => {
-      console.log(username)
       return new User({
         username,
         hash
       }).save()
     },
     deleteUser: (root, { id }) => {
-      return { message: 'delete user route' }
+      return mongoose.findOneAndDelete({ _id: id })
     },
 
     // snippet mutations
@@ -29,28 +29,27 @@ const resolvers = {
       return { message: 'update snippet route' }
     },
     deleteSnippet: (root, { id }) => {
-      return { message: 'delete snippet route' }
+      return mongoose.findOneAndDelete({ _id: id })
     }
   },
   Query: {
     // user queries
     getUser: (root, { username }) => {
-      return { message: 'get user route' }
+      return User.findOne({ username })
     },
     isUser: (root, { username }) => {
-      return { username }
+      return User.find({ username })
     },
     authenticateUser: (root, { username, hash }) => {
-      // const crypto = require('crypto')
-
-      return { id: `${hash}`, username: `${username}` }
+      const user = User.findOne({ username })
+      return user.hash === hash ? user : null
     },
     // snippet queries
-    getSnippet: (root, { id }) => {
-      return { message: 'get snippet route' }
+    getSnippet: (root, { title }) => {
+      return Snippet.find({ title })
     },
-    listSnippets: (root, { id }) => {
-      return { message: 'list snippets route' }
+    listSnippets: (root, { username }) => {
+      return User.findOne({ username })
     }
   }
 }
