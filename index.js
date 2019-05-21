@@ -3,8 +3,8 @@ const app = express()
 
 require('dotenv').config()
 
-const cors = require('cors')
-app.use(cors())
+// const cors = require('cors')
+// app.use(cors())
 
 const bodyparser = require('body-parser')
 app.use(bodyparser.urlencoded({ extended: false }))
@@ -17,16 +17,15 @@ mongoose.connect(process.env.DB, {
 }).then(() => console.log('\nconnected to database'))
   .catch(console.log)
 
-const { makeExecutableSchema } = require('graphql-tools')
+const { buildSchema } = require('graphql')
 const { importSchema } = require('graphql-import')
-const schema = makeExecutableSchema({
-  typeDefs: importSchema('./graphql/User.graphql'),
-  resolvers: require('./graphql/root.js')
-})
+const schema = buildSchema(importSchema('./graphql/User.graphql'))
+const resolvers = require('./graphql/root.js')
 
 const expressGraphQL = require('express-graphql')
-app.use('/graphQL', expressGraphQL({
-  schema,
+app.use('/graphql', expressGraphQL({
+  schema: schema,
+  rootValue: resolvers,
   graphiql: true
 }))
 

@@ -3,13 +3,12 @@
 # import Query from 'Snippet.graphql'
 
 type Mutation {
-  createUser(username: String!, hash: String!): User!
+  createUser(username: String!, hash: String!): User
   deleteUser(id: String!): User
 }
 
 type Query {
   getUser(username: String!): User!
-  isUser(username: String!): User
   authenticateUser(username: String!, hash: String!): User!
 }
 
