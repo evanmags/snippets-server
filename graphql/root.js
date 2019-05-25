@@ -1,9 +1,11 @@
-const mongoose = require('mongoose')
 const User = require('../mongodb/User')
 const Snippet = require('../mongodb/Snippet')
+const { authenticate } = require('./helpers')
 
 const resolvers = {
-  hello: () => { return 'hello world' },
+  hello: () => {
+    return 'hello world'
+  },
   // User mutations
   createUser: ({ username, hash }) => {
     // if (User.find({ username })) return null
@@ -13,24 +15,33 @@ const resolvers = {
     }).save()
   },
   deleteUser: ({ id }) => {
-    return mongoose.findOneAndDelete({ _id: id })
+    return User.findOneAndDelete({ _id: id })
   },
 
   // snippet mutations
-  createSnippet: (data) => {
-    const snippet = new Snippet({
-      user: data.user_id,
-      tags: data.tags,
-      languages: data.languages,
-      content: data.content
+  createSnippet: async ({
+    username,
+    hash,
+    tags,
+    languages,
+    content,
+    title
+  }) => {
+    const user = await authenticate(username, hash)
+    if (!user) { throw new Error(`No user exists for the specified username: ${username}`) }
+    return new Snippet({
+      user,
+      title,
+      tags,
+      languages,
+      content
     }).save()
-    return snippet
   },
   updateSnippet: ({ username, hash }) => {
     return { message: 'update snippet route' }
   },
   deleteSnippet: ({ id }) => {
-    return mongoose.findOneAndDelete({ _id: id })
+    return Snippet.findOneAndDelete({ _id: id })
   },
   // user queries
   getUser: ({ username }) => {
