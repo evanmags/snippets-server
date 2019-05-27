@@ -7,7 +7,7 @@ type Mutation {
 }
 
 type Query{
-  getSnippet(username: String!, hash: String!, id: String!): Snippet!
+  getSnippet(username: String!, hash: String!, title: String!): Snippet!
 }
 
 type Snippet{

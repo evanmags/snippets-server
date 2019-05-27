@@ -3,12 +3,14 @@ const Snippet = require('../mongodb/Snippet')
 const { authenticate } = require('./helpers')
 
 const resolvers = {
+  // this is to test requests actually get through to the server
   hello: () => {
     return 'hello world'
   },
+
   // User mutations
   createUser: ({ username, hash }) => {
-    // if (User.find({ username })) return null
+    if (User.find({ username })) return null
     return new User({
       username,
       hash
@@ -19,23 +21,22 @@ const resolvers = {
   },
 
   // snippet mutations
-  createSnippet: async ({
-    username,
-    hash,
-    tags,
-    languages,
-    content,
-    title
-  }) => {
-    const user = await authenticate(username, hash)
-    if (!user) { throw new Error(`No user exists for the specified username: ${username}`) }
-    return new Snippet({
+  createSnippet: async (data) => {
+    const user = await authenticate(data.username, data.hash)
+    if (!user) { throw new Error(`No user exists for the specified username: ${data.username}`) }
+
+    const snippet = await new Snippet({
       user,
-      title,
-      tags,
-      languages,
-      content
+      title: data.title,
+      tags: data.tags,
+      languages: data.languages,
+      content: data.content
     }).save()
+
+    user.snippets.push(snippet)
+    await user.save()
+
+    return snippet
   },
   updateSnippet: ({ username, hash }) => {
     return { message: 'update snippet route' }
@@ -43,6 +44,7 @@ const resolvers = {
   deleteSnippet: ({ id }) => {
     return Snippet.findOneAndDelete({ _id: id })
   },
+
   // user queries
   getUser: ({ username }) => {
     return User.findOne({ username })
@@ -51,9 +53,24 @@ const resolvers = {
     const user = User.findOne({ username })
     return user.hash === hash ? user : null
   },
+
   // snippet queries
-  getSnippet: ({ title }) => {
-    return Snippet.find({ title })
+  getSnippet: async ({ username, hash, title }) => {
+    const user = await authenticate(username, hash)
+    if (!user) { throw new Error(`No user exists for the specified username: ${username}`) }
+    const snippet = await Snippet.findOne({
+      user,
+      title
+    })
+    return snippet
+  },
+  listUserSnippets: async ({ username, hash }) => {
+    const user = await authenticate(username, hash)
+    if (!user) { throw new Error(`No user exists for the specified username: ${username}`) }
+    const newSnippetsList = await user.snippets.map(element => {
+      return Snippet.findById(element)
+    })
+    return { snippets: newSnippetsList }
   }
 }
 
