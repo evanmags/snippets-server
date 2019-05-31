@@ -38,20 +38,19 @@ const resolvers = {
 
     return snippet
   },
-  updateSnippet: ({ username, hash }) => {
-    return { message: 'update snippet route' }
+  updateSnippet: async (data) => {
+    const user = await authenticate(data.username, data.hash)
+    if (!user) { throw new Error(`No user exists for the specified username: ${data.username}`) }
+
+    Snippet.findByIdAndUpdate({})
   },
   deleteSnippet: ({ id }) => {
     return Snippet.findOneAndDelete({ _id: id })
   },
 
   // user queries
-  getUser: ({ username }) => {
-    return User.findOne({ username })
-  },
-  authenticateUser: ({ username, hash }) => {
-    const user = User.findOne({ username })
-    return user.hash === hash ? user : null
+  getUser: async ({ username, hash }) => {
+    return authenticate(username, hash).populate({ path: 'snippets', model: 'Snippet' }).exec()
   },
 
   // snippet queries
@@ -63,14 +62,6 @@ const resolvers = {
       title
     })
     return snippet
-  },
-  listUserSnippets: async ({ username, hash }) => {
-    const user = await authenticate(username, hash)
-    if (!user) { throw new Error(`No user exists for the specified username: ${username}`) }
-    const newSnippetsList = await user.snippets.map(element => {
-      return Snippet.findById(element)
-    })
-    return { snippets: newSnippetsList }
   }
 }
 

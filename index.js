@@ -3,8 +3,8 @@ const app = express()
 
 require('dotenv').config()
 
-// const cors = require('cors')
-// app.use(cors())
+const cors = require('cors')
+app.use(cors())
 
 const bodyparser = require('body-parser')
 app.use(bodyparser.urlencoded({ extended: false }))

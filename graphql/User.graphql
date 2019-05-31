@@ -1,6 +1,7 @@
 # import Snippet from 'Snippet.graphql'
 # import Mutation from 'Snippet.graphql'
 # import Query from 'Snippet.graphql'
+# import Query from 'test.graphql'
 
 type Mutation {
   createUser(username: String!, hash: String!): User
@@ -8,9 +9,7 @@ type Mutation {
 }
 
 type Query {
-  listUserSnippets(username: String!, hash: String!): User!
-  getUser(username: String!): User!
-  authenticateUser(username: String!, hash: String!): User!
+  getUser(username: String!, hash: String!): User!
 }
 
 type User {
