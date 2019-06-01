@@ -2,8 +2,8 @@
 
 type Mutation {
   createSnippet(username: String!, hash: String!, title: String!, content: String!, language: String, tags: [String]): Snippet!
-  updateSnippet(username: String!, hash: String!, id: String!, title: String, content: String, language: String): Snippet!
-  deleteSnippet(username: String!, hash: String!, id: String!): Snippet
+  updateSnippet(username: String!, hash: String!, title: String!, content: String!, language: String, tags: [String]): Snippet!
+  deleteSnippet(username: String!, hash: String!, title: String!): Snippet
 }
 
 type Query{
