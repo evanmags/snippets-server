@@ -13,7 +13,8 @@ app.use(bodyparser.json())
 const mongoose = require('mongoose')
 mongoose.connect(process.env.DB, {
   useNewUrlParser: true,
-  useCreateIndex: true
+  useCreateIndex: true,
+  useFindAndModify: false
 }).then(() => console.log('\nconnected to database'))
   .catch(console.log)
 

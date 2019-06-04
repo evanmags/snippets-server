@@ -3,18 +3,18 @@
 type Mutation {
   createSnippet(username: String!, hash: String!, title: String!, content: String!, language: String, tags: [String]): Snippet!
   updateSnippet(username: String!, hash: String!, title: String!, content: String!, language: String, tags: [String]): Snippet!
-  deleteSnippet(username: String!, hash: String!, title: String!): Snippet
+  deleteSnippet(userID: String!, snippetID: String!): Snippet
 }
 
 type Query{
-  getSnippet(username: String!, hash: String!, title: String!): Snippet!
+  getSnippet(snippetID: String!): Snippet!
 }
 
 type Snippet{
   _id: ID!
   user: User!
   title: String!
-  languages: String
+  language: String
   tags: [String]
   content: String!
 }

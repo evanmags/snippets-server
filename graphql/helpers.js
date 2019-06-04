@@ -1,5 +1,4 @@
 const User = require('../mongodb/User')
-// const Snippet = require('../mongodb/Snippet')
 
 function authenticate (username, hash) {
   return User.findOne({ username }, (err, user) => {

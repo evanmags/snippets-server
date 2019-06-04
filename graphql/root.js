@@ -23,7 +23,6 @@ const resolvers = {
 
   // snippet mutations
   createSnippet: async (data) => {
-    console.log(data)
     const user = await authenticate(data.username, data.hash)
     if (!user) {
       return new Error(
@@ -35,7 +34,7 @@ const resolvers = {
       user,
       title: data.title,
       tags: data.tags,
-      languages: data.languages,
+      language: data.language,
       content: data.content
     }).save()
 
@@ -56,28 +55,12 @@ const resolvers = {
     })[0]._id
     Snippet.findByIdAndUpdate(ID, data.updated).save()
   },
-  deleteSnippet: async data => {
-    const user = await authenticate(data.username, data.hash)
-      .populate({ path: 'snippets', model: 'Snippet' })
-      .exec()
-    if (!user) {
-      throw new Error(
-        `No user exists for the specified username: ${data.username}`
-      )
-    }
-    const snippetToDelete = user.snippets.map(snippet => {
-      return (data.title === snippet.title) && snippet
+  deleteSnippet: async ({ userID, snippetID }) => {
+    User.findByIdAndUpdate(userID, { $pull: { snippets: snippetID } }, (err) => {
+      if (err) throw new Error('User could not be found')
     })
 
-    user.snippets = user.snippets.map(snippet => {
-      return (data.title !== snippet.title) && snippet
-    })
-    console.log(user)
-    user.save()
-
-    console.log(user)
-
-    return Snippet.findOneAndDelete(snippetToDelete)
+    return Snippet.findByIdAndDelete(snippetID)
   },
 
   // user queries
@@ -88,16 +71,8 @@ const resolvers = {
   },
 
   // snippet queries
-  getSnippet: async ({ username, hash, title }) => {
-    const user = await authenticate(username, hash)
-    if (!user) {
-      throw new Error(`No user exists for the specified username: ${username}`)
-    }
-    const snippet = await Snippet.findOne({
-      user,
-      title
-    })
-    return snippet
+  getSnippet: async ({ snippetID }) => {
+    return Snippet.findById(snippetID)
   }
 }
 
