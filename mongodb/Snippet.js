@@ -19,8 +19,8 @@ const snippetSchema = new Schema({
     type: [String],
     required: false
   },
-  languages: {
-    type: [String],
+  language: {
+    type: String,
     required: false
   }
 })

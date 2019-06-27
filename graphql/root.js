@@ -3,9 +3,9 @@ const Snippet = require('../mongodb/Snippet')
 const { authenticate } = require('./helpers')
 
 const resolvers = {
-  // this is to test requests actually get through to the server
+  // this is tthe test request resolver
   hello: () => {
-    return 'hello world'
+    return 'Hello World!'
   },
 
   // User mutations
@@ -22,40 +22,20 @@ const resolvers = {
   },
 
   // snippet mutations
-  createSnippet: async (data) => {
-    const user = await authenticate(data.username, data.hash)
-    if (!user) {
-      return new Error(
-        `No user exists for the specified username: ${data.username}`
-      )
-    }
-
+  createSnippet: async ({ userID, snippetInfo }) => {
     const snippet = await new Snippet({
-      user,
-      title: data.title,
-      tags: data.tags,
-      language: data.language,
-      content: data.content
+      user: userID,
+      ...snippetInfo
     }).save()
 
-    user.snippets.push(snippet)
-    await user.save()
+    User.findByIdAndUpdate(userID, { $push: { snippets: snippet } })
 
     return snippet
   },
-  updateSnippet: async data => {
-    const user = await authenticate(data.username, data.hash)
-    if (!user) {
-      throw new Error(
-        `No user exists for the specified username: ${data.username}\n`
-      )
-    }
-    const ID = user.snippets.map(snip => {
-      return data.original.title === snip.title
-    })[0]._id
-    Snippet.findByIdAndUpdate(ID, data.updated).save()
+  updateSnippet: ({ snippetID, snippetData }) => {
+    return Snippet.findByIdAndUpdate(snippetID, snippetData)
   },
-  deleteSnippet: async ({ userID, snippetID }) => {
+  deleteSnippet: ({ userID, snippetID }) => {
     User.findByIdAndUpdate(userID, { $pull: { snippets: snippetID } }, (err) => {
       if (err) throw new Error('User could not be found')
     })
@@ -64,14 +44,14 @@ const resolvers = {
   },
 
   // user queries
-  getUser: async ({ username, hash }) => {
+  getUser: ({ username, hash }) => {
     return authenticate(username, hash)
       .populate({ path: 'snippets', model: 'Snippet' })
       .exec()
   },
 
   // snippet queries
-  getSnippet: async ({ snippetID }) => {
+  getSnippet: ({ snippetID }) => {
     return Snippet.findById(snippetID)
   }
 }
